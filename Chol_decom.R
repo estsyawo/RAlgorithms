@@ -21,7 +21,7 @@ Chol_fx <- function(A){
 
 # Example
 
-A <- matrix(round(runif(9)*10), 3)
+A <- matrix(c(3,4,3,4,8,6,3,6,9),nrow = 3)
 
 Chol_solution <- t(chol(A))
 

@@ -117,3 +117,18 @@ range_fx <- function(x,n) {
 
 # Compare result to R function
 all.equal(range_fx(X,length(X)), range(X))
+
+#===========================================================>
+
+### Median ###
+
+median_fx <- function(l) {
+  l <- sort(l); nl = length(l)
+  if (nl%%2 != 0){
+    return(l[(nl/2)+1])}
+  else {
+    return(0.5*(l[nl/2+1] + l[nl/2]))}
+}
+
+# Compare result to R function
+all.equal(median_fx(X), median(X))
