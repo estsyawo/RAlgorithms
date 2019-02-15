@@ -1,4 +1,4 @@
-# Basix functions
+# Basic functions
 
 #===========================================================>
 # Author: Clara-Christina Gerstner
@@ -29,11 +29,24 @@ all.equal(sum_fx(X,length(X)), sum(X))
 # Function
 
 mean_fx <- function(x, n){
+  if (ncol(x) == 1 || is.null(ncol(x))){
   sum_fx(x, n)/n
+  }
+  else{
+    S <-matrix(0:0,ncol=1,nrow=nrow(x)) 
+    for (i in 1:ncol(x)){
+      S[i] <- (sum_fx(x[,i], n))/n
+    }
+    return(S)
+  }
 }
 
 # Compare result to R function
 all.equal(mean_fx(X,length(X)), mean(X))
+
+# Compare result to R function for Matrix
+M <- matrix(runif(100,1,10),10,10)
+all.equal(as.matrix(apply(M,2,mean)),mean_fx(M, nrow(M)))
 
 #===========================================================>
 
@@ -42,11 +55,24 @@ all.equal(mean_fx(X,length(X)), mean(X))
 # Function
 
 Var_fx <- function(x, n) {
+  if (ncol(x) == 1 || is.null(ncol(x))){
   sum_fx(((x-(mean_fx(x, n)))^2),n)/(n-1)
+  }
+  else{
+    S <-matrix(0:0,ncol=1,nrow=nrow(x)) 
+  for (i in 1:ncol(x)){
+  S[i] <- sum_fx(((x[,i]-(mean_fx(x[,i], n)))^2),n)/(n-1)
+  }
+  return(S)
+  }
 }
 
-# Compare result to R function
+# Compare result to R function for Vector
 all.equal(Var_fx(X,length(X)), var(X))
+
+# Compare result to R function for Matrix
+M <- matrix(runif(100,1,10),10,10)
+all.equal(as.matrix(apply(M,2,var)),Var_fx(M, nrow(M)))
 
 #===========================================================>
 
