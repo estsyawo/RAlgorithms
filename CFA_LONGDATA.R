@@ -119,10 +119,10 @@ ML_output <- optim(par=theta, fn=F_ULS, S=S,control = list(maxit=50000))
 CFA_output <- CFA_output_L(ML_output$par,126)
 CFA_output
 
-# NNFI = TLI
-Chib <- 
-Chim <- Diff_model1
-df2 <- 105
+# Compare model and Saturated model
+Sat_model <- (126-1)*(log(det(S)) + ncol(S))
 
-TLI <- ((Chib/df2)-(Chim/df))/((Chib/df2)-1) # Bollen p.273
-TLI
+q=abs(Sat_model-CFA_output$loglik)
+df=78-length(theta)      # number of free parameters
+tail_prob <- 1-(pchisq(q, df, ncp = 0, lower.tail = TRUE, log.p = FALSE))
+tail_prob 

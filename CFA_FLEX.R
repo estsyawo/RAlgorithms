@@ -109,7 +109,7 @@ CFA_output_F <- function(theta, N){
 
 # Different factor structures
 C <- c(5,5,5) # 3 factors, 5 variables each, correct model
-#C <- c(2,3,4,6) # 4 factors, different number of variables
+# C <- c(2,3,4,6) # 4 factors, different number of variables
 
 # Generate starting values
 theta_fun <- function(S,C){
@@ -139,27 +139,70 @@ tail_prob
 # Conclusion: 3-factor model is clearly a better fit than 4-factor model
 
 # Compare 3-factor and Saturated model
-Sat_model <- (150-1)*(log(det(S)) + ncol(S))
-
-c <- q/d
-q <- 120
-d <- # see LISREL documentation
-  
-Sat_model_adj <- c*Sat_model
+Sat_model <- (N-1)*(log(det(S)) + ncol(S))
 
 q=CFA_output$loglik-Sat_model
-q=1160-Sat_model # values from LISREL output
 df=120-33      # number of free parameters
 tail_prob <- 1-(pchisq(q, df, ncp = 0, lower.tail = TRUE, log.p = FALSE))
 tail_prob 
 
-# Conclusion: 3-factor model is not significantly different than Saturated model
-# with LISREL output tailprob is above 0.05
+# Conclusion: 3-factor model is significantly different than Saturated model
+# LISREL output tailprob is above 0.05
+
+#-------------------------------------------------------->
+# STEP V: Fit statistics
+
+N <- 150
+p <- ncol(S)  # number of variables
+t <- length(theta_fun(S,C))  # number of estimated parameters
+df <- ((p*(p+1))/2) - t
+
+# AIC
+(AIC_estimate <- 2*t + CFA_output$loglik)
+
+# BIC
+(BIC_estimate <- t*log10(N) + CFA_output$loglik)
 
 # NNFI = TLI
 Chib <- CFA_output$loglik
 Chim <- CFA_output$loglik - Sat_model
-df2 <- 105
+dfb <- 105
+dfm <- df
+Delm <- max((Chim-dfm),0)
+Delb <- max((Chib-dfb),0)
 
-TLI <- ((Chib/df2)-(Chim/df))/((Chib/df2)-1) # Bollen p.273
-TLI
+(TLI <- ((Chib/dfb)-(Chim/dfm))/((Chib/dfb)-1)) # Bollen p.273
+
+# RMSEA
+(RMSEA_estimate <- sqrt(max((((CFA_output$loglik/df) - 1)/(N - 1)) , 0)))
+
+(RMSEA_estimate2 <- sqrt(Delm/(dfm*(N-1))))
+
+# CFI
+(CFI <- 1 - (Delm/Delb))
+
+# SRMR
+Sig <- CFA_Sigma_F(ML_output$par,S,C)
+lobs <-  S[!lower.tri(S)]
+limp <-  Sig[!lower.tri(Sig)]
+
+(SRMR_estimate <- sqrt(mean((limp - lobs)^2)))
+
+#-------------------------------------------------------->
+# Compare Output lavaan
+CFA.model <- '  Conflict =~ NA*c1 + c2 + c3 + c4 + c5 
+Ambivalence =~ NA*a1 + a2 + a3 + a4 + a5
+Maintenance   =~ NA*m1 + m2 + m3 + m4 + m5 
+Conflict ~~ 1*Conflict
+Ambivalence ~~ 1*Ambivalence
+Maintenance ~~ 1*Maintenance'
+
+library(lavaan)
+S = data.frame(S)
+row.names(S) = c("c1","c2","c3","c4","c5","a1","a2","a3","a4","a5","m1","m2","m3","m4","m5")
+names(S) = c("c1","c2","c3","c4","c5","a1","a2","a3","a4","a5","m1","m2","m3","m4","m5")
+S <- as.matrix(S)
+
+fit <- cfa(CFA.model, sample.cov = as.matrix(S), sample.nobs = 150)
+summary(fit, fit.measures=TRUE)
+fitMeasures(fit)

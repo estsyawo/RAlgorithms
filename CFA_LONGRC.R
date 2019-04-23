@@ -161,5 +161,3 @@ q=abs(Sat_model-CFA_output$loglik)
 df=78-39      # number of free parameters
 tail_prob <- 1-(pchisq(q, df, ncp = 0, lower.tail = TRUE, log.p = FALSE))
 tail_prob 
-
-# Conclusion: 3-factor model is not significantly different than Null model
