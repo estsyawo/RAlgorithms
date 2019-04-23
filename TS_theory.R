@@ -20,7 +20,6 @@ Est_True <- function(x){
 }
 
 # Example
-
 Est_True(X)
 
 #===========================================================>
@@ -43,14 +42,19 @@ pear_fx <- function(x,y){
   (sqrt(dev_fx(x, x) * dev_fx(y, y)))
 }
 
-# Example
-
-X <- c(runif(10,1,10))
-Y <- c(runif(10,1,10))
+# Example 1
+X <- c(0,0,0,0,0,1,1,1,1,1,1,1,1,1,1)   # Binary
+Y <- c(1,4,0,5,7,4,5,7,9,8,6,9,7,6,5)   # Continuous
 
 pear_fx(X,Y)
 
 all.equal(pear_fx(X,Y),cor(X,Y, method = "pearson"))
+
+# Example 2: Pearson correlation table
+
+A <- TEST2[,1:5]
+
+cor(A,A, method = "pearson")
 
 #===========================================================>
 
@@ -61,7 +65,6 @@ cov_fx <- function(x,y){
 }
 
 # Example
-
 cov_fx(X,Y)
 
 all.equal(cov_fx(X,Y),cov(X,Y, method = "pearson"))
@@ -76,7 +79,6 @@ sem_fx <- function(x,x){
 }
 
 # Example
-
 sem_fx(X)
 
 #===========================================================>
@@ -97,7 +99,6 @@ sem_ci <- function(x,z){
 }
 
 # Example
-
 sem_ci(X,1.96)
 
 #===========================================================>
@@ -110,7 +111,6 @@ see_fx <- function(x){
 }
 
 # Example
-
 see_fx(X)
 
 #===========================================================>
@@ -132,7 +132,6 @@ see_ci <- function(x,z){
 }
 
 # Example
-
 see_ci(X,1.96)
 
 #===========================================================>
@@ -202,73 +201,69 @@ all.equal(phi(Con_table),round(phi_fx(Con_table),2))
 # Coefficient alpha
 
 alpha_fx <- function(x){
-  n <- nrow(M)
+  n <- ncol(x)
   (n/(n-1)) * (1-(sum_fx((Var_fx(x))) / Var_fx((apply(x,1,sum_fx))) ))
 }
 
 # Example
+TEST2 <- read.csv("TEST2.csv", header = TRUE)
 
-M <- matrix(runif(100,1,10),10,10)
+alpha_fx(TEST2)
+alpha_M <- cronbach(TEST2)
+rawalpha_M <- alpha_M[[1]]
 
-alpha_fx(M)
-alpha_M <- alpha(M)
-rawalpha_M <- alpha_M[[1]]$raw_alpha
-
-all.equal(alpha_fx(M,nrow(M)), rawalpha_M)
+all.equal(alpha_fx(TEST2), rawalpha_M)
 
 #===========================================================>
 
 # KR-20
 
 kr20_fx <- function(x){
-  n <- nrow(M)
+  n <- nrow(x)
   p <- mean_fx(x)
   (n/(n-1)) * (1-(sum_fx((p*(1-p))) / Var_fx((apply(x,1,sum_fx))) ))
 }
 
 # Example
-
-M <- matrix(round(runif(100,0,1)),10,10)
-kr20_fx(M)
+kr20_fx(TEST2)
 
 #===========================================================>
 
 # Correction for attenuation
 
-Corr_fx <- function(x,y){
+corr_fx <- function(x,y){
   pear_fx(x,y) / sqrt((pear_fx(x,x)*pear_fx(y,y)))
 }
 
 # Example
-
 X <- c(runif(10,1,10))
 Y <- c(runif(10,1,10))
 
-Corr_fx(X,Y)
+corr_fx(X,Y)
+pear_fx(X,Y)
 
 #===========================================================>
 
 # Spearman-Brown Formula
 
-Spearman_fx <- function(x,y,a){
+spearman_fx <- function(x,y,a){
   n <- length(x)
   f <- (n+a)/n
   (f*pear_fx(x,y)) / (1+(f-1)*pear_fx(x,y))
 }
 
 # Example
-
 X <- c(runif(10,1,10))
 Y <- c(runif(10,1,10))
 
-Spearman_fx(X,Y, 5) # add 5 items to test
+spearman_fx(X,Y, 5) # add 5 items to test
 pear_fx(X,Y)
 
 #===========================================================>
 
 # Cohen's kappa
 
-Cohen_fx <- function(Con){
+cohen_fx <- function(Con){
   a <- Con[1,1]
   b <- Con[1,2]
   c <- Con[2,1]
@@ -282,4 +277,4 @@ Cohen_fx <- function(Con){
 # Example Allen & Yen p.37
 Con_table <- matrix(c(22,4,2,11),2,2)  
 
-Cohen_fx(Con_table)
+cohen_fx(Con_table)

@@ -34,7 +34,7 @@ Conjgrad_fx <- function(A,b,x = rep(0, ncol(A))){
 
 # Example 
 
-A <- matrix(round(runif(4,1,10)), 2)
+A <- matrix(c(7,3,5,7), 2)
 b <- c(1,2)
 
 Conjgrad_fx(A,b)

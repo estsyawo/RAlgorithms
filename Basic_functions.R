@@ -10,7 +10,8 @@
 
 # Function
 
-sum_fx <- function(x, n){
+sum_fx <- function(x){
+  n <- length(x)
   sum_x = 0
   for (i in 1:n){
   sum_x <- sum_x + x[i]
@@ -20,7 +21,7 @@ sum_fx <- function(x, n){
 
 # Compare result to R function
 X <- c(runif(10,1,10))
-all.equal(sum_fx(X,length(X)), sum(X))
+all.equal(sum_fx(X), sum(X))
 
 #===========================================================>
 
@@ -28,25 +29,27 @@ all.equal(sum_fx(X,length(X)), sum(X))
 
 # Function
 
-mean_fx <- function(x, n){
+mean_fx <- function(x){
   if (ncol(x) == 1 || is.null(ncol(x))){
-  sum_fx(x, n)/n
+  n <- length(x)
+  S <- sum_fx(x)/n
   }
   else{
     S <-matrix(0:0,ncol=1,nrow=nrow(x)) 
     for (i in 1:ncol(x)){
-      S[i] <- (sum_fx(x[,i], n))/n
+      n <- nrow(x)
+      S[i] <- (sum_fx(x[,i]))/n
     }
     return(S)
   }
 }
 
 # Compare result to R function
-all.equal(mean_fx(X,length(X)), mean(X))
+all.equal(mean_fx(X), mean(X))
 
 # Compare result to R function for Matrix
 M <- matrix(runif(100,1,10),10,10)
-all.equal(as.matrix(apply(M,2,mean)),mean_fx(M, nrow(M)))
+all.equal(as.matrix(apply(M,2,mean)),mean_fx(M))
 
 #===========================================================>
 
@@ -54,25 +57,27 @@ all.equal(as.matrix(apply(M,2,mean)),mean_fx(M, nrow(M)))
 
 # Function
 
-Var_fx <- function(x, n) {
+Var_fx <- function(x) {
   if (ncol(x) == 1 || is.null(ncol(x))){
-  sum_fx(((x-(mean_fx(x, n)))^2),n)/(n-1)
+  n <- length(x)
+  S <- sum_fx(((x-(mean_fx(x)))^2))/(n-1)
   }
   else{
     S <-matrix(0:0,ncol=1,nrow=nrow(x)) 
   for (i in 1:ncol(x)){
-  S[i] <- sum_fx(((x[,i]-(mean_fx(x[,i], n)))^2),n)/(n-1)
+  n <- nrow(x)
+  S[i] <- sum_fx(((x[,i]-(mean_fx(x[,i])))^2))/(n-1)
   }
   return(S)
   }
 }
 
 # Compare result to R function for Vector
-all.equal(Var_fx(X,length(X)), var(X))
+all.equal(Var_fx(X), var(X))
 
 # Compare result to R function for Matrix
 M <- matrix(runif(100,1,10),10,10)
-all.equal(as.matrix(apply(M,2,var)),Var_fx(M, nrow(M)))
+all.equal(as.matrix(apply(M,2,var)),Var_fx(M))
 
 #===========================================================>
 
@@ -80,12 +85,12 @@ all.equal(as.matrix(apply(M,2,var)),Var_fx(M, nrow(M)))
 
 # Function
 
-SD_fx <- function(x,n) {
-  sqrt(Var_fx(x, n))
+SD_fx <- function(x) {
+  sqrt(Var_fx(x))
 }
 
 # Compare result to R function
-all.equal(SD_fx(X,length(X)), sd(X))
+all.equal(SD_fx(X), sd(X))
 
 #===========================================================>
 
@@ -93,7 +98,8 @@ all.equal(SD_fx(X,length(X)), sd(X))
 
 # Function
 
-min_fx <- function(x,n) {
+min_fx <- function(x) {
+  n <- length(x)
   if (n > 1) {  
     min_x = x[1]
     for (i in 2:n) {
@@ -107,7 +113,7 @@ min_fx <- function(x,n) {
 }
 
 # Compare result to R function
-all.equal(min_fx(X,length(X)), min(X))
+all.equal(min_fx(X), min(X))
 
 #===========================================================>
 
@@ -115,7 +121,8 @@ all.equal(min_fx(X,length(X)), min(X))
 
 # Function
 
-max_fx <- function(x,n) {
+max_fx <- function(x) {
+  n <- length(x)
   if (n > 1) {  
     max_x = x[1]
     for (i in 2:n) {
@@ -129,7 +136,7 @@ max_fx <- function(x,n) {
 }
 
 # Compare result to R function
-all.equal(max_fx(X,length(X)), max(X))
+all.equal(max_fx(X), max(X))
 
 #===========================================================>
 
@@ -137,12 +144,12 @@ all.equal(max_fx(X,length(X)), max(X))
 
 # Function
 
-range_fx <- function(x,n) {
-  return(c(min_fx(x,n), max_fx(x,n)))
+range_fx <- function(x) {
+  return(c(min_fx(x), max_fx(x)))
 }
 
 # Compare result to R function
-all.equal(range_fx(X,length(X)), range(X))
+all.equal(range_fx(X), range(X))
 
 #===========================================================>
 
